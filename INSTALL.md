@@ -97,6 +97,59 @@ The installer is safe to re-run. On every run:
 
 This is by design: re-running brings the machine back to a known state.
 
+## Session-persistence subsystem
+
+Added 2026-05-25. Reboot-survival pipeline:
+
+- `bin/kitty-session-snapshot` parses `kitty @ ls --json`, finds the
+  latest Claude Code session per cwd, and writes a Kitty session file at
+  `~/.config/kitty/sessions/last.conf`.
+- `LaunchAgents/wtf.alex.kitty-snapshot.plist` runs the snapshot every
+  30s. Loaded with `launchctl bootstrap gui/$UID <plist>` (installer
+  does this).
+- `config/kitty/kitty.conf` has `startup_session
+  ~/.config/kitty/sessions/last.conf` — Kitty replays the file at
+  launch.
+- On reboot: user opens Kitty (or it auto-launches via Login Items) →
+  all tabs come back, each Claude Code chat resumes with full context
+  via `claude --resume <id>`. The `pai` wrapper is detected and
+  restored as `launch pai`.
+- Plain shell tabs come back in their cwd, no command auto-run.
+- Per-tab scrollback dumped to `~/.config/chats/scrollback/`.
+
+To verify after install:
+```bash
+launchctl print "gui/$UID/wtf.alex.kitty-snapshot" | grep state
+# state = active   (means the agent is loaded and scheduled)
+ls /tmp/kitty-snapshot.log /tmp/kitty-snapshot.err
+# both should exist after Kitty has been open for >30s
+cat ~/.config/kitty/sessions/last.conf
+# should show tabs as `new_tab ...` blocks
+```
+
+If `kitty @ ls` fails inside the script: the user's Kitty needs to be
+launched with `listen_on unix:/tmp/kitty` (already in `kitty.conf`).
+Verify with `ls -la /tmp/kitty` — should be a socket while Kitty runs.
+
+If `kitty` binary isn't on PATH for the snapshot script: the installer
+adds a symlink from `/Applications/kitty.app/Contents/MacOS/kitty` to
+`/opt/homebrew/bin/kitty`. Re-run installer if missing.
+
+## Hammerspoon (Cyrillic Cmd-shortcut fix)
+
+Added 2026-05-25. Replaces per-app Russian-keymap mirrors with a
+system-wide fix. No kext / no system extension — uses Accessibility API
+only.
+
+After install: user must open Hammerspoon once and grant Accessibility
+permission via Settings → Privacy & Security → Accessibility. The
+config (`hammerspoon/init.lua`) auto-watches itself for changes via
+`pathwatcher` — edits reload without restart.
+
+Verify: run `pgrep -x Hammerspoon` (should return a PID) and check the
+menu-bar icon. With Russian layout active in Kitty, `Cmd+V` should
+paste; without Hammerspoon, it would have done nothing.
+
 ## After install
 
 Point the user to `docs/LEARN-TO-SH.md` for daily training exercises.

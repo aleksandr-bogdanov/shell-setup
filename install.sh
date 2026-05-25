@@ -72,6 +72,30 @@ backup_and_link "$REPO_DIR/config/kitty/themes"     "$HOME/.config/kitty/themes"
 backup_and_link "$REPO_DIR/config/starship.toml"    "$HOME/.config/starship.toml"
 backup_and_link "$REPO_DIR/config/theme/theme.zsh"  "$HOME/.config/theme/theme.zsh"
 
+# Hammerspoon (system-wide Cmd-shortcut fix for non-Latin keyboard layouts)
+backup_and_link "$REPO_DIR/hammerspoon/init.lua"   "$HOME/.hammerspoon/init.lua"
+
+# Session-snapshot script
+mkdir -p "$HOME/.local/bin"
+backup_and_link "$REPO_DIR/bin/kitty-session-snapshot" "$HOME/.local/bin/kitty-session-snapshot"
+chmod +x "$REPO_DIR/bin/kitty-session-snapshot" || true
+
+# LaunchAgent for periodic snapshots
+mkdir -p "$HOME/Library/LaunchAgents"
+backup_and_link "$REPO_DIR/LaunchAgents/wtf.alex.kitty-snapshot.plist" \
+                "$HOME/Library/LaunchAgents/wtf.alex.kitty-snapshot.plist"
+
+# Put kitty's binary on PATH so `kitty @` works from launchd / scripts
+if [[ ! -e "/opt/homebrew/bin/kitty" && -x "/Applications/kitty.app/Contents/MacOS/kitty" ]]; then
+  ln -s "/Applications/kitty.app/Contents/MacOS/kitty" "/opt/homebrew/bin/kitty"
+  ok "Linked kitty binary → /opt/homebrew/bin/kitty"
+fi
+
+# Bootstrap the snapshot LaunchAgent (every 30s)
+launchctl bootout "gui/$UID/wtf.alex.kitty-snapshot" 2>/dev/null || true
+launchctl bootstrap "gui/$UID" "$HOME/Library/LaunchAgents/wtf.alex.kitty-snapshot.plist" || warn "launchctl bootstrap failed; you may need to load it manually"
+ok "Snapshot LaunchAgent active (every 30s)"
+
 # ── 5. Initial theme: Catppuccin Latte ────────────────
 say "Setting initial theme to Catppuccin Latte…"
 mkdir -p "$HOME/.config/theme"
@@ -136,6 +160,14 @@ echo "  2. Run: theme list             # see available themes"
 echo "  3. Run: theme cat              # switch to Catppuccin Latte (default)"
 echo "  4. (Optional) edit ~/.zshenv.local to add API tokens"
 echo "  5. Read docs/LEARN-TO-SH.md for daily-training exercises"
+echo
+warn "MANUAL STEPS (one-time):"
+echo "  a. Open Hammerspoon (Cmd+Space → 'Hammerspoon'). It will prompt for"
+echo "     Accessibility permission — grant it in Settings → Privacy & Security"
+echo "     → Accessibility. Restart Hammerspoon. You should see"
+echo "     'Russian Cmd-shortcut fix active' alert and a Hammerspoon menu-bar icon."
+echo "  b. Add Kitty to Login Items: System Settings → General → Login Items"
+echo "     → Add Kitty. (Or use a LaunchAgent if you prefer; see INSTALL.md.)"
 echo
 echo "If your terminal still looks bare:"
 echo "  exec zsh                       # re-execute zsh in the current shell"

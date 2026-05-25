@@ -4,6 +4,12 @@
 # ─── Terminal emulator ──────────────────────────────────
 cask "kitty"
 
+# ─── System-wide key remapping (no kext; DH-managed-Mac safe) ───
+cask "hammerspoon"
+
+# ─── JSON tooling (used by kitty-session-snapshot) ──────
+brew "jq"
+
 # ─── Fonts ──────────────────────────────────────────────
 cask "font-lilex"
 cask "font-lilex-nerd-font"

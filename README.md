@@ -21,6 +21,8 @@ controlled, transplantable to any new Mac.
 | **Reference** | tealdeer (`tldr`), glow (markdown), gping (graphical ping) |
 | **Per-project env** | direnv (auto-loads `.envrc`) |
 | **Theme switching** | Custom `theme <name>` function — swaps the entire stack at once across 4 baked-in themes (Mocha, Latte, OneHalfLight, Nord Light) |
+| **Session persistence** | `kitty-session-snapshot` writes a Kitty session file every 30s via launchd. On reboot, Kitty replays the file — every Claude Code tab `--resume`s its last session in the same cwd. Plain shell tabs come back in their cwd. Scrollback snapshotted to `~/.config/chats/scrollback/`. |
+| **Cyrillic-friendly Cmd shortcuts** | Hammerspoon (`~/.hammerspoon/init.lua`) rewrites Cmd+Cyrillic → Cmd+Latin system-wide. No kext / no system extension — DH-managed-Mac safe. Replaces the per-app Russian-mirror hacks. |
 
 ## Install on a fresh Mac
 
@@ -86,13 +88,19 @@ shell-setup/
 ├── home/
 │   ├── .zshrc              # the canonical shell config
 │   └── .zshenv.local.example
-└── config/
-    ├── kitty/
-    │   ├── kitty.conf
-    │   └── themes/         # mocha, latte, nord-light, onehalflight
-    ├── starship.toml
-    └── theme/
-        └── theme.zsh       # the `theme` switcher function
+├── config/
+│   ├── kitty/
+│   │   ├── kitty.conf
+│   │   └── themes/         # mocha, latte, nord-light, onehalflight
+│   ├── starship.toml
+│   └── theme/
+│       └── theme.zsh       # the `theme` switcher function
+├── hammerspoon/
+│   └── init.lua            # Cyrillic-Cmd remap (system-wide)
+├── bin/
+│   └── kitty-session-snapshot   # auto-restore script
+└── LaunchAgents/
+    └── wtf.alex.kitty-snapshot.plist   # 30s snapshot agent
 ```
 
 ## Status
