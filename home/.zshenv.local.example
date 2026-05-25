@@ -1,0 +1,12 @@
+# Copy this file to ~/.zshenv.local and fill in your own values.
+# ~/.zshenv.local is gitignored — never commit secrets to the repo.
+
+# Sentry CLI / SDK auth
+# export SENTRY_AUTH_TOKEN="sntryu_xxxxxxxxxxxxxxxxxxxxxxx"
+
+# Google AI Studio
+# export GOOGLE_API_KEY="AIzaSyXxxxxxxxxxxxxxxxxxxxxxx"
+
+# Anthropic / OpenAI / whatever else
+# export ANTHROPIC_API_KEY="sk-ant-xxxxxxxx"
+# export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxx"

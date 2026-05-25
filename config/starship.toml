@@ -1,0 +1,60 @@
+# Starship enhancements — overrides on top of defaults
+# Docs: https://starship.rs/config/
+
+# ─── Right side: live clock ──────────────────────────────
+# Useful for long Claude Code sessions to anchor when things happened
+right_format = "$time"
+
+# ─── Time module ─────────────────────────────────────────
+[time]
+disabled = false
+format = "[$time]($style)"
+time_format = "%R"
+style = "dimmed white"
+
+# ─── Command duration (lower threshold, italic dim style) ─
+# Default fires at 2s — drop to 500ms so almost every command shows timing
+[cmd_duration]
+min_time = 500
+format = "took [$duration]($style) "
+style = "italic dimmed yellow"
+
+# ─── Prompt character: red on failure, green on success ──
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol   = "[❯](bold red)"
+vimcmd_symbol  = "[❮](bold green)"
+
+# ─── Git status: more explicit counts ────────────────────
+[git_status]
+format    = '([\[$all_status$ahead_behind\]]($style) )'
+style     = "bold red"
+ahead     = "⇡${count}"
+behind    = "⇣${count}"
+diverged  = "⇕⇡${ahead_count}⇣${behind_count}"
+modified  = "!${count}"
+staged    = "+${count}"
+untracked = "?${count}"
+stashed   = "\\$${count}"
+renamed   = "»${count}"
+deleted   = "✘${count}"
+conflicted = "="
+
+# ─── Directory: nicer truncation ─────────────────────────
+[directory]
+truncation_length = 4
+truncation_symbol = "…/"
+read_only         = " 🔒"
+
+# ─── Disable gcloud module (was leaking authed account into every prompt) ──
+[gcloud]
+disabled = true
+
+# ─── Background jobs (built-in module) ───────────────────
+# Show when you have backgrounded any process (& or Ctrl+Z)
+[jobs]
+symbol            = "⚙ "
+threshold         = 1
+symbol_threshold  = 1
+format            = "[$symbol$number]($style) "
+style             = "bold blue"

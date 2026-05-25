@@ -1,0 +1,17 @@
+# Local-only files (never commit)
+home/.zshenv.local
+config/theme/active.zsh
+
+# OS noise
+.DS_Store
+*.swp
+*.swo
+
+# Backup files left by edit operations
+*.bak
+*.pre-*
+
+# Per-tool state that the switcher regenerates
+config/bottom/bottom.toml
+config/tealdeer/config.toml
+config/lazygit/config.yml
